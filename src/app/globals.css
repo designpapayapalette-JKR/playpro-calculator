@@ -1,26 +1,106 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary-neon: #b8ff47;
+  --color-primary-forest: #00a651;
+  --color-playpro-dark: #0B0F0E;
+  --color-playpro-card: #151A19;
+  --color-playpro-border: #2D3130;
+  
+  --font-outfit: var(--font-outfit);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #0B0F0E;
+  --foreground: #ffffff;
+  --primary-neon: #b8ff47;
+  --primary-forest: #00a651;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Utilities similar to playpro.fit */
+.glass {
+  background: rgba(21, 26, 25, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-neon {
+  color: #b8ff47;
+}
+
+.bg-neon {
+  background-color: #b8ff47;
+}
+
+.bg-forest {
+  background-color: #00a651;
+}
+
+.btn-primary {
+  background-color: #00a651;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #008f45;
+  transform: scale(1.05);
+}
+
+.btn-outline {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: #b8ff47;
+}
+
+/* Glowing Backgrounds */
+.neon-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(184, 255, 71, 0.08) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.forest-glow {
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(0, 166, 81, 0.05) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.bg-grid-subtle {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, rgba(184, 255, 71, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(184, 255, 71, 0.03) 1px, transparent 1px);
 }

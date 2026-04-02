@@ -13,7 +13,6 @@ export const PRODUCTS = {
     name: "PlayPro™ Pickleball Business Blueprint & Calculator",
     description: "CAPEX + OPEX + Revenue + ROI sheets, fully editable, works in Excel & Google Sheets. Includes Vendor Directory (India) + Investor Pitch Deck Template.",
     price: 499,
-    pricePaise: 49900,
     oldPrice: 1999,
     file_path: "products/PlayPro_Pickleball_Business_Blueprint.xlsx",
   }

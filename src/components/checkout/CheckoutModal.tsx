@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, X, ShieldCheck } from 'lucide-react';
 import { PRODUCTS } from '@/lib/constants';
@@ -13,7 +13,6 @@ interface CheckoutModalProps {
 
 declare global {
   interface Window {
-    Razorpay: any;
     fbq: any;
   }
 }
@@ -30,79 +29,14 @@ export default function CheckoutModal({ isOpen, onClose, planId }: CheckoutModal
     setIsLoading(true);
 
     try {
-      // Get UTM params
+      // TODO: integrate payment gateway
+      // Collect UTM params for future order tracking
       const urlParams = new URLSearchParams(window.location.search);
       const utm_source = urlParams.get('utm_source');
       const utm_medium = urlParams.get('utm_medium');
       const utm_campaign = urlParams.get('utm_campaign');
 
-      // 1. Create Razorpay Order
-      const res = await fetch('/api/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name, 
-          email, 
-          phone, 
-          plan_id: planId,
-          utm_source,
-          utm_medium,
-          utm_campaign
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create order');
-
-      // 2. Open Razorpay Checkout
-      const options = {
-        key: data.key,
-        amount: data.amount,
-        currency: data.currency,
-        name: 'PlayPro',
-        description: product.name,
-        order_id: data.order_id,
-        handler: async (response: any) => {
-          // 3. Verify Payment
-          const verifyRes = await fetch('/api/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            }),
-          });
-
-          const verifyData = await verifyRes.json();
-          if (verifyRes.ok && verifyData.success) {
-            // Track Purchase for Meta Pixel
-            if (typeof window.fbq === 'function') {
-              window.fbq('track', 'Purchase', { 
-                value: product.price, 
-                currency: 'INR',
-                content_name: product.name
-              });
-            }
-            window.location.href = verifyData.redirect;
-          } else {
-            alert('Payment verification failed. Please contact support.');
-          }
-        },
-        prefill: {
-          name,
-          email,
-          contact: phone,
-        },
-        theme: {
-          color: '#b8ff47',
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-      // Only close if Razorpay opened successfully
-      onClose();
+      console.log('Order intent:', { name, email, phone, plan_id: planId, utm_source, utm_medium, utm_campaign });
     } catch (error: any) {
       console.error(error);
       alert(error.message);
@@ -123,14 +57,14 @@ export default function CheckoutModal({ isOpen, onClose, planId }: CheckoutModal
           onClick={onClose}
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
-        
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="relative w-full max-w-lg bg-[#151A19] border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
         >
-          <button 
+          <button
             onClick={onClose}
             className="absolute top-6 right-6 p-2 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors"
           >

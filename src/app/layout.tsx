@@ -45,12 +45,6 @@ export default function RootLayout({
           `}
         </Script>
         
-        {/* Razorpay Script */}
-        <Script
-          id="razorpay-checkout-js"
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="lazyOnload"
-        />
       </head>
       <body className={`${outfit.variable} font-sans antialiased text-white bg-[#0B0F0E]`}>
         {children}

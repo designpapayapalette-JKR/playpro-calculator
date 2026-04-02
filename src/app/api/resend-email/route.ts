@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import React from 'react';
 import { createAdminClient, createSessionClient } from '@/lib/supabase/server';
-import { resend, EMAIL_FROM } from '@/lib/resend';
+import { getResend, EMAIL_FROM } from '@/lib/resend';
 import { PurchaseEmail } from '@/components/emails/PurchaseEmail';
 import { SIGNED_URL_EXPIRY, PRODUCTS } from '@/lib/constants';
 
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     }
 
     // Send email via Resend
-    const { error: emailError } = await resend.emails.send({
+    const { error: emailError } = await getResend().emails.send({
       from: EMAIL_FROM,
       to: [order.customer_email],
       subject: `Your ${product.name} is ready! 🎉`,

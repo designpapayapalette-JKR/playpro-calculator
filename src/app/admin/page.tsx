@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { motion } from 'framer-motion';
@@ -30,7 +32,11 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const router = useRouter();
-  const supabase = createClient();
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
+  const getSupabase = () => {
+    if (!supabaseRef.current) supabaseRef.current = createClient();
+    return supabaseRef.current;
+  };
 
   useEffect(() => {
     checkAuth();
@@ -38,7 +44,7 @@ export default function AdminDashboard() {
   }, [statusFilter]);
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await getSupabase().auth.getUser();
     if (!user) {
       router.push('/admin/login');
     }
@@ -48,7 +54,7 @@ export default function AdminDashboard() {
     setIsLoading(true);
     try {
       // 1. Fetch Orders
-      let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
+      let query = getSupabase().from('orders').select('*').order('created_at', { ascending: false });
       
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);
@@ -94,7 +100,7 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await getSupabase().auth.signOut();
     router.push('/admin/login');
   };
 

@@ -2,6 +2,18 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
+  const isAdminLogin = request.nextUrl.pathname.startsWith('/admin/login')
+
+  // If Supabase is not configured (e.g. static landing-page-only deployment),
+  // block admin access entirely rather than crashing.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (isAdminRoute && !isAdminLogin) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
+    return NextResponse.next({ request: { headers: request.headers } })
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -9,8 +21,8 @@ export async function middleware(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -36,10 +48,8 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Protect admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!user && !request.nextUrl.pathname.startsWith('/admin/login')) {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
-    }
+  if (isAdminRoute && !user && !isAdminLogin) {
+    return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
   return response

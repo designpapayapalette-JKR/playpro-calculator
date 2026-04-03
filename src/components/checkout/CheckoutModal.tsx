@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, X, ShieldCheck } from 'lucide-react';
 import { PRODUCTS } from '@/lib/constants';
@@ -22,24 +23,42 @@ export default function CheckoutModal({ isOpen, onClose, planId }: CheckoutModal
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const product = PRODUCTS[planId];
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
-      // TODO: integrate payment gateway
-      // Collect UTM params for future order tracking
       const urlParams = new URLSearchParams(window.location.search);
-      const utm_source = urlParams.get('utm_source');
-      const utm_medium = urlParams.get('utm_medium');
-      const utm_campaign = urlParams.get('utm_campaign');
 
-      console.log('Order intent:', { name, email, phone, plan_id: planId, utm_source, utm_medium, utm_campaign });
-    } catch (error: any) {
-      console.error(error);
-      alert(error.message);
+      const res = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          plan_id: planId,
+          utm_source: urlParams.get('utm_source'),
+          utm_medium: urlParams.get('utm_medium'),
+          utm_campaign: urlParams.get('utm_campaign'),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+
+      if (typeof window.fbq === 'function') {
+        window.fbq('track', 'Purchase', { value: product.price, currency: 'INR' });
+      }
+
+      router.push(`/thank-you?order=${data.order_id}`);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +97,11 @@ export default function CheckoutModal({ isOpen, onClose, planId }: CheckoutModal
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm font-medium">
+                  {error}
+                </div>
+              )}
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-3">Full Name</label>
                 <input

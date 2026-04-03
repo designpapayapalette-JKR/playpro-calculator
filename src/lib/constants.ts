@@ -14,7 +14,7 @@ export const PRODUCTS = {
     description: "CAPEX + OPEX + Revenue + ROI sheets, fully editable, works in Excel & Google Sheets. Includes Vendor Directory (India) + Investor Pitch Deck Template.",
     price: 499,
     oldPrice: 1999,
-    file_path: "PlayPro_Pickleball_Business_Blueprint.xlsx",
+    file_path: "PlayPro_Pickleball_Court_Calculator.xlsx",
   }
 };
 

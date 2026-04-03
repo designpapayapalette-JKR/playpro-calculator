@@ -12,4 +12,4 @@ export function getResend(): Resend {
   return _resend;
 }
 
-export const EMAIL_FROM = process.env.EMAIL_FROM || 'PlayPro <noreply@playpro.fit>';
+export const EMAIL_FROM = process.env.EMAIL_FROM || 'PlayPro <onboarding@resend.dev>';

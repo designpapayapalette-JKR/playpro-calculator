@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import React from 'react';
+import { render } from '@react-email/render';
 import { createAdminClient, createSessionClient } from '@/lib/supabase/server';
 import { getResend, EMAIL_FROM } from '@/lib/resend';
 import { PurchaseEmail } from '@/components/emails/PurchaseEmail';
@@ -45,17 +46,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to generate download link' }, { status: 500 });
     }
 
+    // Render email to HTML
+    const html = await render(React.createElement(PurchaseEmail, {
+      customerName: order.customer_name,
+      downloadUrl: signedUrlData.signedUrl,
+      orderId: order.id,
+      amount: `₹${order.amount / 100}`,
+    }));
+
     // Send email via Resend
     const { error: emailError } = await getResend().emails.send({
       from: EMAIL_FROM,
       to: [order.customer_email],
       subject: `Your ${product.name} is ready! 🎉`,
-      react: React.createElement(PurchaseEmail, {
-        customerName: order.customer_name,
-        downloadUrl: signedUrlData.signedUrl,
-        orderId: order.id,
-        amount: `₹${order.amount / 100}`,
-      }),
+      html,
     });
 
     if (emailError) {

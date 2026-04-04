@@ -76,7 +76,7 @@ export default function FAQ() {
                   openIndex === index ? 'border-[#b8ff47] bg-[#1a2e23]' : 'border-white/5 hover:border-[#b8ff47]/30'
                 }`}
               >
-                <span className="text-lg md:text-xl font-bold font-playfair pr-8 leading-tight">
+                <span className="text-lg md:text-xl font-bold pr-8 leading-tight">
                   {faq.question}
                 </span>
                 <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${

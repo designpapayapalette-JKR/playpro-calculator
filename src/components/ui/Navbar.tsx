@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -37,9 +38,14 @@ export default function Navbar() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
-          <span className="text-xl md:text-2xl font-black tracking-tighter text-white uppercase italic">
-            PLAY<span className="text-[#b8ff47]">PRO</span>
-          </span>
+          <Image
+            src="/logo.svg"
+            alt="PlayPro Logo"
+            width={160}
+            height={94}
+            className="h-10 w-auto"
+            priority
+          />
         </Link>
         
         <div className="hidden md:flex items-center gap-8">

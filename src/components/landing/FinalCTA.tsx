@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Heart } from 'lucide-react';
+import Image from 'next/image';
 
 export function FinalCTA() {
   const scrollToPricing = () => {
@@ -73,9 +74,13 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-16 mb-24 text-center md:text-left transition-all">
           <div className="flex flex-col gap-8 items-center md:items-start max-w-sm">
-            <span className="text-3xl font-black tracking-tighter text-white uppercase italic">
-              PLAY<span className="text-[#b8ff47]">PRO</span>
-            </span>
+            <Image
+              src="/logo.svg"
+              alt="PlayPro Logo"
+              width={160}
+              height={94}
+              className="h-10 w-auto"
+            />
             <p className="text-gray-500 text-sm font-bold leading-relaxed uppercase tracking-wider">
               India's #1 Pickleball Business Infrastructure Partner. Build with data, not guesswork.
             </p>
